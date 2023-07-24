@@ -17,12 +17,14 @@ class JsonOutputFormatter implements OutputFormatter
 
         foreach ($analysisResults->getAnalysisResults() as $analysisResult) {
             $location = $analysisResult->getLocation();
+            $details = $analysisResult->getFullDetails();
             $results[] = [
                 'file' => $location->getAbsoluteFileName()->getFileName(),
                 'line' => $location->getLineNumber()->getLineNumber(),
                 'type' => $analysisResult->getType()->getType(),
                 'message' => $analysisResult->getMessage(),
                 'severity' => $analysisResult->getSeverity()->getSeverity(),
+                'original_tool_details' => $details
             ];
         }
 
