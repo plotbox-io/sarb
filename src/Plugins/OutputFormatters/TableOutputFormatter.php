@@ -43,6 +43,7 @@ class TableOutputFormatter implements OutputFormatter
         /** @var string[] $headings */
         $headings = [
             'Line',
+            'ErrorName',
             'Description',
         ];
 
@@ -73,6 +74,7 @@ class TableOutputFormatter implements OutputFormatter
             Assert::notNull($currentTable, 'No Table object');
             $currentTable->addRow([
                 $analysisResult->getLocation()->getLineNumber()->getLineNumber(),
+                $analysisResult->getFullDetails()['type'] ?? null,
                 $prefix.$analysisResult->getMessage(),
             ]);
         }
