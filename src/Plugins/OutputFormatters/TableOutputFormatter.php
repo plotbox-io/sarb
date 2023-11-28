@@ -72,9 +72,10 @@ class TableOutputFormatter implements OutputFormatter
             }
 
             Assert::notNull($currentTable, 'No Table object');
+            $fullDetails = $analysisResult->getFullDetails();
             $currentTable->addRow([
                 $analysisResult->getLocation()->getLineNumber()->getLineNumber(),
-                $analysisResult->getFullDetails()['type'] ?? null,
+                $fullDetails['source'] ?? $fullDetails['type'] ?? null,
                 $prefix.$analysisResult->getMessage(),
             ]);
         }
