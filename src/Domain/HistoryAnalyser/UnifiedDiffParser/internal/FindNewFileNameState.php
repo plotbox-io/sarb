@@ -23,6 +23,7 @@ use DaveLiddament\StaticAnalysisResultsBaseliner\Domain\Utils\StringUtils;
 class FindNewFileNameState implements State
 {
     public const NEW_FILE = '+++ b/';
+    public const NEW_FILE_WITH_UNICODE_ESCAPES = '+++ "b/';
 
     /**
      * @var FileMutationBuilder
@@ -41,6 +42,16 @@ class FindNewFileNameState implements State
     {
         if (LineTypeDetector::isDeletedFile($line)) {
             return new FindFileDiffStartState($this->fileMutationBuilder->build());
+        }
+
+        // Pre-preocess in case where c style escape sequences are used
+        if (StringUtils::startsWith(self::NEW_FILE_WITH_UNICODE_ESCAPES, $line)) {
+            // Get the text between the double quotes
+            // Value e.g, +++ "b/.build/DEVOPS-1066-high-plo\342\200\223001\342\200\223002-stored-cros-lf-test"
+            preg_match('/"(.*)"/', $line, $matches);
+            $lineInner = $matches[1] ?? throw new \RuntimeException('No match found');
+            $decoded = stripcslashes($lineInner);
+            $line = "+++ $decoded";
         }
 
         if (!StringUtils::startsWith(self::NEW_FILE, $line)) {
